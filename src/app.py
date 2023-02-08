@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 #from dotenv import load_dotenv
 #import os
 from decouple import config
 from sqlalchemy import create_engine
+from flask_swagger_ui import get_swaggerui_blueprint
 
 # print(config('USER'))
 
@@ -43,6 +44,28 @@ class TaskSchema(ma.Schema):
 
 task_schema = TaskSchema()
 tasks_schema = TaskSchema(many=True)
+
+REQUEST_API = Blueprint('request_api', __name__)
+
+def get_blueprint():
+    """Return the blueprint for the main app module"""
+    return REQUEST_API
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "flask-sqlalchemy-mysql"
+    }
+)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+app.register_blueprint(get_blueprint())
 
 @app.route('/', methods=['GET'])
 def get_hello():

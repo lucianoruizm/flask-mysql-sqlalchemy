@@ -14,6 +14,7 @@ Packages:
     pymysql
     python-dotenv
     python-decouple
+    flask-swagger-ui
 
 Ejecución:
     python src/{nombre de archivo}.py
